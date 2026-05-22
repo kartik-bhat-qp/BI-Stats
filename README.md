@@ -1,6 +1,6 @@
-# BI Stats
+# BI Lite
 
-BI tool and text analysis
+It is a bi tool for analysis from different data sources\
 
 UX prototype built with the QuestionPro UX Prototype Base.
 

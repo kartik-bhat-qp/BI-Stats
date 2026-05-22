@@ -6,9 +6,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { IWuTableColumnDef } from '@npm-questionpro/wick-ui-lib';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
+import { PageContainer } from '@/components/ui/PageContainer';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { TableScrollWrap } from '@/components/ui/TableScrollWrap';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useWickUILib } from '@/components/ui/useWickUILib';
 import { MOCK_PROJECTS, type Project, type ProjectStatus } from '@/data/mock-projects';
 import { formatDate } from '@/data/mock-utils';
 
@@ -38,26 +41,6 @@ const WuMenuItem = dynamic(
 );
 const WuMenuSeparatorItem = dynamic(
   () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuMenuSeparatorItem })),
-  { ssr: false }
-);
-const WuModal = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuModal })),
-  { ssr: false }
-);
-const WuModalHeader = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuModalHeader })),
-  { ssr: false }
-);
-const WuModalContent = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuModalContent })),
-  { ssr: false }
-);
-const WuModalFooter = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuModalFooter })),
-  { ssr: false }
-);
-const WuModalClose = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuModalClose })),
   { ssr: false }
 );
 const WuTextarea = dynamic(
@@ -121,6 +104,7 @@ function RowActions({
 const DEFAULT_FORM = { name: '', description: '', status: 'draft' as ProjectStatus };
 
 export default function ProjectsPage() {
+  const wick = useWickUILib();
   const { showToast } = useWuShowToast();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusOption | null>(null);
@@ -200,7 +184,7 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <div className="p-6">
+    <PageContainer>
       <PageHeader
         title="Projects"
         description="Manage and track all your research projects"
@@ -211,7 +195,7 @@ export default function ProjectsPage() {
         }
       />
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <WuInput
           variant="outlined"
           placeholder="Search projects..."
@@ -219,7 +203,7 @@ export default function ProjectsPage() {
           iconPosition="left"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-64"
+          className="w-full sm:w-64"
         />
         <WuSelect
           data={STATUS_FILTER_OPTIONS}
@@ -234,25 +218,28 @@ export default function ProjectsPage() {
         />
       </div>
 
-      <WuTable
-        data={filteredProjects as unknown[]}
-        columns={columns as unknown as IWuTableColumnDef<unknown>[]}
-        variant="striped"
-        sort={{ enabled: true }}
-        filterText={search}
-        NoDataContent={
-          <EmptyState
-            icon="wm-search-off"
-            title="No projects found"
-            description="Try adjusting your search or filter"
-          />
-        }
-      />
+      <TableScrollWrap>
+        <WuTable
+          data={filteredProjects as unknown[]}
+          columns={columns as unknown as IWuTableColumnDef<unknown>[]}
+          variant="striped"
+          sort={{ enabled: true }}
+          filterText={search}
+          NoDataContent={
+            <EmptyState
+              icon="wm-search-off"
+              title="No projects found"
+              description="Try adjusting your search or filter"
+            />
+          }
+        />
+      </TableScrollWrap>
 
       {/* Create project modal */}
-      <WuModal open={isCreateOpen} onOpenChange={setIsCreateOpen} size="md">
-        <WuModalHeader>New Project</WuModalHeader>
-        <WuModalContent>
+      {isCreateOpen && wick ? (
+      <wick.WuModal open onOpenChange={setIsCreateOpen} size="md">
+        <wick.WuModalHeader>New Project</wick.WuModalHeader>
+        <wick.WuModalContent>
           <div className="flex flex-col gap-4">
             <WuInput
               Label="Project Name"
@@ -284,14 +271,15 @@ export default function ProjectsPage() {
               variant="outlined"
             />
           </div>
-        </WuModalContent>
-        <WuModalFooter>
-          <WuModalClose variant="secondary">Cancel</WuModalClose>
+        </wick.WuModalContent>
+        <wick.WuModalFooter>
+          <wick.WuModalClose variant="secondary">Cancel</wick.WuModalClose>
           <WuButton onClick={handleCreate} disabled={!formData.name.trim()}>
             Create Project
           </WuButton>
-        </WuModalFooter>
-      </WuModal>
+        </wick.WuModalFooter>
+      </wick.WuModal>
+      ) : null}
 
       {/* Archive confirmation */}
       <ConfirmModal
@@ -303,6 +291,6 @@ export default function ProjectsPage() {
         variant="critical"
         onConfirm={handleArchive}
       />
-    </div>
+    </PageContainer>
   );
 }

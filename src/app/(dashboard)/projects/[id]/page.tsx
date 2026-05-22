@@ -8,6 +8,7 @@ import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
 import type { IWuTabItem } from '@npm-questionpro/wick-ui-lib';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageContainer } from '@/components/ui/PageContainer';
 import { MOCK_PROJECTS, type Project, type ProjectStatus } from '@/data/mock-projects';
 import { formatDate } from '@/data/mock-utils';
 
@@ -131,7 +132,7 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="p-6">
+      <PageContainer>
         <EmptyState
           icon="wm-error-outline"
           title="Project not found"
@@ -142,7 +143,7 @@ export default function ProjectDetailPage() {
             </Link>
           }
         />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -165,7 +166,7 @@ export default function ProjectDetailPage() {
   ];
 
   return (
-    <div className="p-6">
+    <PageContainer>
       <Link
         href="/projects"
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
@@ -178,6 +179,6 @@ export default function ProjectDetailPage() {
         action={<StatusBadge status={project.status} />}
       />
       <WuTab items={tabs} defaultValue="overview" />
-    </div>
+    </PageContainer>
   );
 }

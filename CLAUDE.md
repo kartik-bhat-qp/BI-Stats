@@ -6,11 +6,11 @@ Do not build backend APIs, database schema, auth, sync engine, or production int
 
 ## Core Concepts
 
-**Product:** BI Stats
-**What it does:** BI tool and text analysis
+**Product:** BI Lite
+**What it does:** It is a bi tool for analysis from different data sources\
 **Primary users:** Researchers
-**Key entities:** Responses, questions
-**Primary actions:** Create dashboard, share dashboard, add widgets
+**Key entities:** Surveys, data sources
+**Primary actions:** Create dashboard, add widget, share dashboard
 
 
 ## Workflow

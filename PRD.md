@@ -1,21 +1,21 @@
-# PRD — BI Stats
+# PRD — BI Lite
 
 ## Overview
 
-**Product:** BI Stats
-**What it does:** BI tool and text analysis
+**Product:** BI Lite
+**What it does:** It is a bi tool for analysis from different data sources\
 **Primary users:** Researchers
 
 ## Key Entities
 
-- **Responses**
-- **questions**
+- **Surveys**
+- **data sources**
 
 ## Primary User Actions
 
 - Create dashboard
+- add widget
 - share dashboard
-- add widgets
 
 ---
 

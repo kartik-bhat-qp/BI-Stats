@@ -1,5 +1,5 @@
 {
-  "name": "bi-stats",
+  "name": "bi-lite",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@amcharts/amcharts5": "^5.17.2",
+    "@amcharts/amcharts5-geodata": "^5.1.5",
     "@npm-questionpro/wick-ui-icon": "^9.0.0",
     "@npm-questionpro/wick-ui-lib": "^1.39.0",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -34,13 +36,16 @@
     "next": "16.2.6",
     "react": "^19.2.6",
     "react-day-picker": "^9.5.1",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-grid-layout": "^2.2.3",
+    "react-resizable": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-grid-layout": "^1.3.6",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
