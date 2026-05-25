@@ -1,0 +1,29 @@
+{
+  "cookies": [
+    {
+      "name": "xa3-cookie-id",
+      "value": "s%3AQtM7cs9rZPOUaOw9m4gzOx6xIfn6TTDh.HGzyUco3oWgzraimtniut9L%2BLBV%2FztEL%2FdJO0F6Ulvs",
+      "domain": "bilabs.questionpro.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://bilabs.questionpro.com",
+      "localStorage": [
+        {
+          "name": "i18nextLng",
+          "value": "en"
+        },
+        {
+          "name": "version",
+          "value": "789"
+        }
+      ]
+    }
+  ]
+}
