@@ -4,12 +4,14 @@ import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { IWuTableColumnDef } from '@npm-questionpro/wick-ui-lib';
 import { StandardLoader } from '@/components/ui/StandardLoader';
+import type { TextAiAnalysisQuestion } from '@/data/mock-text-ai-questions';
 import {
   MOCK_TEXT_AI_ANALYSIS_QUESTIONS,
-  TEXT_AI_QUESTION_CONTEXT_EMPTY,
-  type TextAiAnalysisQuestion,
+  TEXT_AI_CREDIT_BALANCE,
+  TEXT_AI_QUESTION_CONTEXT_PLACEHOLDER,
+  getTextAiCreditsNeeded,
 } from '@/data/mock-text-ai-questions';
-import { truncate } from '@/data/mock-utils';
+import { formatTextAiCredits, truncate } from '@/data/mock-utils';
 import styles from './TextAiQuestionSelection.module.css';
 
 const WuCheckbox = dynamic(
@@ -42,6 +44,7 @@ export function TextAiQuestionSelection({
 }: TextAiQuestionSelectionProps) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [contextByQuestionId, setContextByQuestionId] = useState<Record<number, string>>({});
 
   const filteredQuestions = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -63,6 +66,7 @@ export function TextAiQuestionSelection({
   const rangeEnd = Math.min((safePage + 1) * PAGE_SIZE, filteredQuestions.length);
   const totalCount = MOCK_TEXT_AI_ANALYSIS_QUESTIONS.length;
   const selectedCount = selectedQuestionIds.length;
+  const creditsNeeded = getTextAiCreditsNeeded(selectedCount);
 
   function toggleQuestion(id: number, checked: boolean): void {
     onSelectionChange(
@@ -82,10 +86,12 @@ export function TextAiQuestionSelection({
     onSelectionChange(selectedQuestionIds.filter((id) => !pageIds.includes(id)));
   }
 
+  function updateContext(questionId: number, value: string): void {
+    setContextByQuestionId((prev) => ({ ...prev, [questionId]: value }));
+  }
+
   const allPageSelected =
     pageQuestions.length > 0 && pageQuestions.every((q) => selectedQuestionIds.includes(q.id));
-  const somePageSelected =
-    pageQuestions.some((q) => selectedQuestionIds.includes(q.id)) && !allPageSelected;
 
   const columns: IWuTableColumnDef<TextAiAnalysisQuestion>[] = [
     {
@@ -94,7 +100,6 @@ export function TextAiQuestionSelection({
         <div className={styles.checkboxHeader}>
           <WuCheckbox
             checked={allPageSelected}
-            indeterminate={somePageSelected}
             onChange={togglePageAll}
             aria-label="Select all questions on this page"
           />
@@ -131,20 +136,27 @@ export function TextAiQuestionSelection({
       accessorKey: 'context',
       header: 'Context',
       cell: ({ row }) => (
-        <span
-          className={
-            row.original.context ? styles.contextProvided : styles.contextEmpty
-          }
-        >
-          {row.original.context ?? TEXT_AI_QUESTION_CONTEXT_EMPTY}
-        </span>
+        <WuInput
+          variant="outlined"
+          placeholder={TEXT_AI_QUESTION_CONTEXT_PLACEHOLDER}
+          value={contextByQuestionId[row.original.id] ?? ''}
+          onChange={(e) => updateContext(row.original.id, e.target.value)}
+          className={styles.contextInput}
+          aria-label={`Context for ${row.original.code}`}
+        />
       ),
     },
   ];
 
   return (
     <div className={styles.root}>
-      <p className={styles.heading}>Select questions for text analysis:</p>
+      <div className={styles.headingRow}>
+        <p className={styles.heading}>Select questions for text analysis:</p>
+        <span className={styles.credits} aria-live="polite">
+          Credits required: {formatTextAiCredits(creditsNeeded)}/
+          {formatTextAiCredits(TEXT_AI_CREDIT_BALANCE)}
+        </span>
+      </div>
 
       <div className={styles.searchRow}>
         <WuInput

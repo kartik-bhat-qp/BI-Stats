@@ -2,8 +2,6 @@ export interface TextAiAnalysisQuestion {
   id: number;
   code: string;
   text: string;
-  /** When set, shown in the Context column; otherwise "Context not provided". */
-  context?: string;
 }
 
 export const MOCK_TEXT_AI_ANALYSIS_QUESTIONS: TextAiAnalysisQuestion[] = [
@@ -34,7 +32,17 @@ export const MOCK_TEXT_AI_ANALYSIS_QUESTIONS: TextAiAnalysisQuestion[] = [
   },
 ];
 
-export const TEXT_AI_QUESTION_CONTEXT_EMPTY = 'Context not provided';
+export const TEXT_AI_QUESTION_CONTEXT_PLACEHOLDER = 'Context not provided';
+
+/** Account credit balance for TextAI dashboard creation. */
+export const TEXT_AI_CREDIT_BALANCE = 15000;
+
+/** Credits consumed per selected question. */
+export const TEXT_AI_CREDITS_PER_QUESTION = 1640;
+
+export function getTextAiCreditsNeeded(selectedQuestionCount: number): number {
+  return selectedQuestionCount * TEXT_AI_CREDITS_PER_QUESTION;
+}
 
 export function getDefaultSelectedTextAiQuestionIds(): number[] {
   return MOCK_TEXT_AI_ANALYSIS_QUESTIONS.map((q) => q.id);

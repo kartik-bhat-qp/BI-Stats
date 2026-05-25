@@ -4,10 +4,26 @@
   gap: 0.75rem;
 }
 
+.headingRow {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
 .heading {
   color: #545e6b;
   font-size: 14px;
   margin: 0;
+}
+
+.credits {
+  color: #f8b100;
+  font-size: 14px;
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .searchRow {
@@ -91,13 +107,12 @@
   font-size: 14px;
 }
 
-.contextEmpty {
-  color: #b0b0b0;
-  font-size: 14px;
-  font-style: italic;
+.contextInput {
+  min-width: 12rem;
+  width: 100%;
 }
 
-.contextProvided {
-  color: #545e6b;
-  font-size: 14px;
+.contextInput :global(input::placeholder) {
+  color: #b0b0b0;
+  font-style: italic;
 }
