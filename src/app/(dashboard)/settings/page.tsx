@@ -2,60 +2,67 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { PageContainer } from '@/components/ui/PageContainer';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
+import { PageContainer } from '@/components/ui/PageContainer';
+import {
+  MOCK_ORGANIZATION_CREDIT_BALANCE,
+  MOCK_QUESTIONPRO_AI_ENABLED,
+} from '@/data/mock-organization-settings';
+import { formatTextAiCredits } from '@/data/mock-utils';
+import styles from './page.module.css';
 
-const WuButton = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuButton })),
+const WuToggle = dynamic(
+  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuToggle })),
   { ssr: false }
 );
-const WuInput = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuInput })),
-  { ssr: false }
-);
-const WuSelect = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuSelect })),
+const WuTooltip = dynamic(
+  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuTooltip })),
   { ssr: false }
 );
 
-const TIMEZONE_OPTIONS = [
-  { value: 'America/Los_Angeles', label: 'Pacific Time (US)' },
-  { value: 'America/New_York', label: 'Eastern Time (US)' },
-  { value: 'Europe/London', label: 'London' },
-];
+const CREDIT_BALANCE_TOOLTIP =
+  'To view the complete balance sheet, go to My Account → Usage.';
 
 export default function SettingsPage() {
   const { showToast } = useWuShowToast();
-  const [orgName, setOrgName] = useState('Acme Research');
-  const [timezone, setTimezone] = useState(TIMEZONE_OPTIONS[0]);
+  const [questionProAiEnabled, setQuestionProAiEnabled] = useState(MOCK_QUESTIONPRO_AI_ENABLED);
 
   return (
-    <PageContainer className="max-w-2xl">
-      <PageHeader
-        title="Settings"
-        description="Organization settings for QuestionPro BI"
-      />
-      <div className="flex flex-col gap-6 border border-gray-200 rounded-lg p-6 bg-white">
-        <WuInput
-          Label="Organization name"
-          variant="outlined"
-          value={orgName}
-          onChange={(e) => setOrgName(e.target.value)}
-        />
-        <WuSelect
-          data={TIMEZONE_OPTIONS}
-          accessorKey={{ value: 'value', label: 'label' }}
-          value={timezone}
-          onSelect={(v) => setTimezone(v as typeof timezone)}
-          Label="Default timezone"
-          variant="outlined"
-        />
-        <WuButton
-          onClick={() => showToast({ message: 'Settings saved', variant: 'success' })}
-        >
-          Save changes
-        </WuButton>
+    <PageContainer>
+      <h1 className={styles.pageTitle}>Organization settings</h1>
+
+      <div className={styles.settingsList}>
+        <div className={styles.settingRow}>
+          <span className={styles.settingLabel}>
+            <span className={`wc-ai ${styles.settingIcon}`} aria-hidden />
+            QuestionPro AI
+          </span>
+          <WuToggle
+            checked={questionProAiEnabled}
+            onChange={(checked) => {
+              setQuestionProAiEnabled(checked);
+              showToast({
+                message: checked ? 'QuestionPro AI enabled' : 'QuestionPro AI disabled',
+                variant: 'success',
+              });
+            }}
+            aria-label="QuestionPro AI"
+          />
+        </div>
+
+        <div className={styles.settingRow}>
+          <span className={styles.settingLabel}>
+            Credit balance
+            <WuTooltip content={CREDIT_BALANCE_TOOLTIP} position="bottom">
+              <span className={styles.infoIconWrap} aria-label={CREDIT_BALANCE_TOOLTIP}>
+                <span className="wm-info" />
+              </span>
+            </WuTooltip>
+          </span>
+          <span className={styles.creditValue}>
+            {formatTextAiCredits(MOCK_ORGANIZATION_CREDIT_BALANCE)}
+          </span>
+        </div>
       </div>
     </PageContainer>
   );

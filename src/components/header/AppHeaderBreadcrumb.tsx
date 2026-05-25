@@ -30,6 +30,10 @@ function buildBreadcrumbItems(pathname: string): BreadcrumbItem[] {
     return [workspaces, workspace, { label: 'Dashboards' }];
   }
 
+  if (pathname === '/settings') {
+    return [workspaces, workspace, { label: 'Settings' }];
+  }
+
   const dashboardMatch = pathname.match(/^\/dashboards\/(\d+)$/);
   if (dashboardMatch) {
     const dashboard = getDashboardById(Number(dashboardMatch[1]));
