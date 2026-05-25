@@ -16,6 +16,7 @@ import { TextAiQuestionSelection } from '@/components/text-ai/TextAiQuestionSele
 import { TextAiSurveySelection } from '@/components/text-ai/TextAiSurveySelection';
 import { useWickUILib } from '@/components/ui/useWickUILib';
 import { getDefaultSelectedTextAiQuestionIds } from '@/data/mock-text-ai-questions';
+import type { TextAiDashboardCreatePayload } from '@/data/text-ai-dashboard-create';
 import type { SurveyListItem } from '@/data/mock-survey-folders';
 import modalStyles from '@/components/dashboards/CreateDashboardModal.module.css';
 import styles from './CreateTextAiDashboardModal.module.css';
@@ -29,7 +30,7 @@ interface CreateTextAiDashboardModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultName: string;
-  onCreate: (name: string, survey: SurveyListItem) => void;
+  onCreate: (payload: TextAiDashboardCreatePayload) => void;
 }
 
 export function CreateTextAiDashboardModal({
@@ -49,6 +50,7 @@ export function CreateTextAiDashboardModal({
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<number[]>(() =>
     getDefaultSelectedTextAiQuestionIds()
   );
+  const [separateDashboardPerQuestion, setSeparateDashboardPerQuestion] = useState(false);
 
   const resetWizard = useCallback(() => {
     setStep('survey');
@@ -56,6 +58,7 @@ export function CreateTextAiDashboardModal({
     setModelSetup(createDefaultModelSetupValues(defaultName));
     setNameError(false);
     setSelectedQuestionIds(getDefaultSelectedTextAiQuestionIds());
+    setSeparateDashboardPerQuestion(false);
   }, [defaultName]);
 
   const handleOpenChange = useCallback(
@@ -86,7 +89,13 @@ export function CreateTextAiDashboardModal({
       showToast({ message: 'Select at least one question', variant: 'error' });
       return;
     }
-    onCreate(getTrimmedName(), selectedSurvey);
+    onCreate({
+      name: getTrimmedName(),
+      survey: selectedSurvey,
+      questionIds: selectedQuestionIds,
+      separateDashboardPerQuestion:
+        separateDashboardPerQuestion && selectedQuestionIds.length > 1,
+    });
     handleOpenChange(false);
   }
 
@@ -117,6 +126,13 @@ export function CreateTextAiDashboardModal({
     );
     setStep('model-setup');
   }
+
+  const createDashboardCount =
+    separateDashboardPerQuestion && selectedQuestionIds.length > 1
+      ? selectedQuestionIds.length
+      : 1;
+  const createButtonLabel =
+    createDashboardCount > 1 ? `Create ${createDashboardCount} dashboards` : 'Create';
 
   if (!open || !wick) {
     return null;
@@ -165,6 +181,8 @@ export function CreateTextAiDashboardModal({
           <TextAiQuestionSelection
             selectedQuestionIds={selectedQuestionIds}
             onSelectionChange={setSelectedQuestionIds}
+            separateDashboardPerQuestion={separateDashboardPerQuestion}
+            onSeparateDashboardPerQuestionChange={setSeparateDashboardPerQuestion}
           />
         </WuModalContent>
       )}
@@ -189,7 +207,7 @@ export function CreateTextAiDashboardModal({
                   <WuButton onClick={handleModelSetupNext}>Next</WuButton>
                 )}
                 {step === 'select-questions' && (
-                  <WuButton onClick={handleFinish}>Create</WuButton>
+                  <WuButton onClick={handleFinish}>{createButtonLabel}</WuButton>
                 )}
               </>
             ) : (

@@ -44,6 +44,10 @@ export function getTextAiCreditsNeeded(selectedQuestionCount: number): number {
   return selectedQuestionCount * TEXT_AI_CREDITS_PER_QUESTION;
 }
 
+export function getTextAiQuestionById(id: number): TextAiAnalysisQuestion | undefined {
+  return MOCK_TEXT_AI_ANALYSIS_QUESTIONS.find((q) => q.id === id);
+}
+
 export function getDefaultSelectedTextAiQuestionIds(): number[] {
   return MOCK_TEXT_AI_ANALYSIS_QUESTIONS.map((q) => q.id);
 }

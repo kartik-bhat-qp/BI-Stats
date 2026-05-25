@@ -24,24 +24,6 @@
   margin: 0;
 }
 
-.menuBtn {
-  align-items: center;
-  background: none;
-  border: none;
-  color: #909090;
-  cursor: pointer;
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: 18px;
-  height: 2rem;
-  justify-content: center;
-  width: 2rem;
-}
-
-.menuBtn:hover {
-  color: #545e6b;
-}
-
 .toolbar {
   align-items: center;
   display: flex;
@@ -61,23 +43,7 @@
   align-items: center;
   display: flex;
   flex-shrink: 0;
-  gap: 8px;
-}
-
-.pageNavBtn {
-  align-items: center;
-  background: none;
-  border: none;
-  color: #545e6b;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 16px;
-  padding: 4px;
-}
-
-.pageNavBtn:disabled {
-  color: #d1d5db;
-  cursor: not-allowed;
+  gap: 4px;
 }
 
 .pageRange {
@@ -99,7 +65,53 @@
 }
 
 .tableWrap :global(table) {
-  min-width: 56rem;
+  min-width: 72rem;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.tableWrap :global(thead th),
+.tableWrap :global(tbody td) {
+  overflow: hidden;
+  padding: 0.625rem 0.75rem;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.tableWrap :global(thead th:nth-child(1)),
+.tableWrap :global(tbody td:nth-child(1)) {
+  width: 18%;
+}
+
+.tableWrap :global(thead th:nth-child(2)),
+.tableWrap :global(tbody td:nth-child(2)) {
+  width: 16%;
+}
+
+.tableWrap :global(thead th:nth-child(3)),
+.tableWrap :global(tbody td:nth-child(3)) {
+  width: 22%;
+}
+
+.tableWrap :global(thead th:nth-child(4)),
+.tableWrap :global(tbody td:nth-child(4)) {
+  width: 28%;
+}
+
+.tableWrap :global(thead th:nth-child(5)),
+.tableWrap :global(tbody td:nth-child(5)) {
+  width: 16%;
+}
+
+.tableWrap :global(thead th) {
+  color: #545e6b;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tableWrap :global(tbody td) {
+  font-size: 13px;
 }
 
 .valueCell,
@@ -111,16 +123,45 @@
   line-height: 1.45;
 }
 
+.insightCell {
+  display: block;
+  max-width: 100%;
+}
+
+.tagsCell {
+  color: #909090;
+  display: block;
+  max-width: 100%;
+}
+
+.subtopicCell {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .subtopicPill {
   align-items: center;
   border-radius: 999px;
+  box-sizing: border-box;
   display: inline-flex;
   font-size: 12px;
   gap: 0.375rem;
   line-height: 1.2;
   max-width: 100%;
+  min-width: 0;
   padding: 0.25rem 0.625rem;
+}
+
+.subtopicLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.subtopicPill :global([class*='wm-']) {
+  font-size: 14px;
 }
 
 .subtopicNeutral {

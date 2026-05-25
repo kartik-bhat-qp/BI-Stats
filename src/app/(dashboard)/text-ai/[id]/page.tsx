@@ -2,25 +2,32 @@
 
 import { use, useState } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
 import { TextAiDashboardCanvas } from '@/components/text-ai/TextAiDashboardCanvas';
 import { TextAiDashboardToolbar } from '@/components/text-ai/TextAiDashboardToolbar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PageContainer } from '@/components/ui/PageContainer';
+import { StandardLoader } from '@/components/ui/StandardLoader';
+import { useWickUILib } from '@/components/ui/useWickUILib';
 import { getTextAiDashboardById } from '@/data/get-text-ai-dashboard-by-id';
 
-const WuButton = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuButton })),
-  { ssr: false }
-);
-
 function TextAiDashboardDetailContent({ numericId }: { numericId: number }) {
+  const wick = useWickUILib();
   const { showToast } = useWuShowToast();
   const dashboard = getTextAiDashboardById(numericId);
   const [name, setName] = useState(dashboard?.name ?? 'Untitled');
 
   if (!dashboard) {
+    if (!wick) {
+      return (
+        <PageContainer>
+          <StandardLoader message="Loading dashboard…" />
+        </PageContainer>
+      );
+    }
+
+    const { WuButton } = wick;
+
     return (
       <PageContainer>
         <EmptyState

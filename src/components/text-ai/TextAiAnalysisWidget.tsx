@@ -1,26 +1,18 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import type { IWuTableColumnDef } from '@npm-questionpro/wick-ui-lib';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
+import { StandardLoader } from '@/components/ui/StandardLoader';
+import { useWickUILib } from '@/components/ui/useWickUILib';
 import type { TextAiAnalysisRow, TextAiAnalysisWidget } from '@/data/mock-text-ai-widget-data';
 import styles from './TextAiAnalysisWidget.module.css';
 
-const WuInput = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuInput })),
-  { ssr: false }
-);
-const WuSelect = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuSelect })),
-  { ssr: false }
-);
-const WuTable = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuTable })),
-  { ssr: false }
-);
-
-const PAGE_SIZE = 100;
+const PAGE_SIZE_OPTIONS = [
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
+  { value: '200', label: '200' },
+];
 
 interface TextAiAnalysisWidgetProps {
   widget: TextAiAnalysisWidget;
@@ -33,25 +25,31 @@ function SubtopicPill({
   label: string;
   tone: TextAiAnalysisRow['subtopicTone'];
 }) {
+  const isPositive = tone === 'positive';
   return (
     <span
       className={`${styles.subtopicPill} ${
-        tone === 'positive' ? styles.subtopicPositive : styles.subtopicNeutral
+        isPositive ? styles.subtopicPositive : styles.subtopicNeutral
       }`}
+      title={label}
     >
       <span
-        className={tone === 'positive' ? 'wm-sentiment-satisfied' : 'wm-sentiment-neutral'}
+        className={isPositive ? 'wm-check' : 'wm-sentiment-neutral'}
         aria-hidden
       />
-      {label}
+      <span className={styles.subtopicLabel}>{label}</span>
     </span>
   );
 }
 
 export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) {
+  const wick = useWickUILib();
   const { showToast } = useWuShowToast();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
+
+  const pageSizeNum = Number(pageSize.value);
 
   const filteredRows = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -66,15 +64,15 @@ export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) 
     );
   }, [search, widget.rows]);
 
-  const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSizeNum));
   const safePage = Math.min(page, pageCount - 1);
   const pageRows = useMemo(() => {
-    const start = safePage * PAGE_SIZE;
-    return filteredRows.slice(start, start + PAGE_SIZE);
-  }, [filteredRows, safePage]);
+    const start = safePage * pageSizeNum;
+    return filteredRows.slice(start, start + pageSizeNum);
+  }, [filteredRows, safePage, pageSizeNum]);
 
-  const rangeStart = filteredRows.length === 0 ? 0 : safePage * PAGE_SIZE + 1;
-  const rangeEnd = Math.min((safePage + 1) * PAGE_SIZE, filteredRows.length);
+  const rangeStart = filteredRows.length === 0 ? 0 : safePage * pageSizeNum + 1;
+  const rangeEnd = Math.min((safePage + 1) * pageSizeNum, filteredRows.length);
 
   const columns: IWuTableColumnDef<TextAiAnalysisRow>[] = [
     {
@@ -94,7 +92,9 @@ export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) 
       header: 'Subtopics',
       enableSorting: true,
       cell: ({ row }) => (
-        <SubtopicPill label={row.original.subtopic} tone={row.original.subtopicTone} />
+        <div className={styles.subtopicCell}>
+          <SubtopicPill label={row.original.subtopic} tone={row.original.subtopicTone} />
+        </div>
       ),
     },
     {
@@ -111,18 +111,27 @@ export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) 
     },
   ];
 
+  if (!wick) {
+    return (
+      <article className={styles.card}>
+        <StandardLoader message="Loading widget…" />
+      </article>
+    );
+  }
+
+  const { WuButton, WuInput, WuSelect, WuTable } = wick;
+
   return (
     <article className={styles.card}>
       <header className={styles.cardHeader}>
         <h2 className={styles.cardTitle}>{widget.question}</h2>
-        <button
-          type="button"
-          className={styles.menuBtn}
+        <WuButton
+          variant="iconOnly"
+          size="sm"
           aria-label="Widget menu"
           onClick={() => showToast({ message: 'Widget menu', variant: 'success' })}
-        >
-          <span className="wm-more-vert" />
-        </button>
+          Icon={<span className="wm-more-vert" />}
+        />
       </header>
 
       <div className={styles.toolbar}>
@@ -139,32 +148,34 @@ export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) 
           className={styles.searchInput}
         />
         <div className={styles.paginationBar}>
-          <button
-            type="button"
-            className={styles.pageNavBtn}
+          <WuButton
+            variant="iconOnly"
+            size="sm"
+            aria-label="Previous page"
             disabled={safePage === 0}
             onClick={() => setPage((p) => Math.max(0, p - 1))}
-            aria-label="Previous page"
-          >
-            <span className="wm-chevron-left" />
-          </button>
+            Icon={<span className="wm-chevron-left" />}
+          />
           <span className={styles.pageRange}>
-            {rangeStart} - {rangeEnd || PAGE_SIZE}
+            {rangeStart} - {rangeEnd || pageSizeNum}
           </span>
-          <button
-            type="button"
-            className={styles.pageNavBtn}
+          <WuButton
+            variant="iconOnly"
+            size="sm"
+            aria-label="Next page"
             disabled={safePage >= pageCount - 1}
             onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-            aria-label="Next page"
-          >
-            <span className="wm-chevron-right" />
-          </button>
+            Icon={<span className="wm-chevron-right" />}
+          />
           <WuSelect
-            data={[{ value: '100', label: '100' }]}
+            data={PAGE_SIZE_OPTIONS}
             accessorKey={{ value: 'value', label: 'label' }}
-            value={{ value: '100', label: '100' }}
-            onSelect={() => {}}
+            value={pageSize}
+            onSelect={(option) => {
+              if (!option) return;
+              setPageSize(option as (typeof PAGE_SIZE_OPTIONS)[number]);
+              setPage(0);
+            }}
             variant="outlined"
             className={styles.pageSizeSelect}
           />
@@ -175,7 +186,6 @@ export function TextAiAnalysisWidgetCard({ widget }: TextAiAnalysisWidgetProps) 
         <WuTable
           data={pageRows as unknown[]}
           columns={columns as unknown as IWuTableColumnDef<unknown>[]}
-          variant="striped"
           sort={{ enabled: true }}
           filterText=""
         />

@@ -13,9 +13,10 @@ import {
   MOCK_TEXT_AI_DASHBOARDS,
   type TextAiDashboard,
 } from '@/data/mock-text-ai-dashboards';
-import type { SurveyListItem } from '@/data/mock-survey-folders';
 import { saveRuntimeTextAiDashboard } from '@/data/text-ai-dashboard-runtime';
-import { formatSmartDate } from '@/data/mock-utils';
+import type { TextAiDashboardCreatePayload } from '@/data/text-ai-dashboard-create';
+import { getTextAiQuestionById } from '@/data/mock-text-ai-questions';
+import { formatSmartDate, formatTextAiCredits } from '@/data/mock-utils';
 import styles from './TextAiDashboards.module.css';
 
 const WuTable = dynamic(
@@ -66,9 +67,16 @@ export default function TextAiPage() {
         cell: ({ row }) => formatSmartDate(row.original.creationDate),
       },
       {
-        accessorKey: 'type',
-        header: 'Type',
-        cell: ({ row }) => row.original.type,
+        accessorKey: 'commentCount',
+        header: 'No of comments',
+        headerAlign: 'center',
+        cellAlign: 'center',
+        enableSorting: true,
+        cell: ({ row }) => (
+          <span className={styles.commentCountCell}>
+            {formatTextAiCredits(row.original.commentCount)}
+          </span>
+        ),
       },
       {
         accessorKey: 'status',
@@ -79,21 +87,52 @@ export default function TextAiPage() {
     []
   );
 
-  function handleCreate(name: string, survey: SurveyListItem): void {
-    const dashboard: TextAiDashboard = {
-      id: Date.now(),
-      name,
-      creationDate: new Date().toISOString(),
-      type: 'Advanced',
-      status: 'Completed',
-    };
-    saveRuntimeTextAiDashboard(dashboard);
-    setDashboards((prev) => [dashboard, ...prev]);
-    showToast({
-      message: `TextAI dashboard '${name}' created from "${survey.name}"`,
-      variant: 'success',
-    });
-    router.push(`/text-ai/${dashboard.id}`);
+  function handleCreate({
+    name,
+    survey,
+    questionIds,
+    separateDashboardPerQuestion,
+  }: TextAiDashboardCreatePayload): void {
+    const baseTimestamp = Date.now();
+    const estimatedComments = questionIds.length * 964;
+    const createdDashboards: TextAiDashboard[] = separateDashboardPerQuestion
+      ? questionIds.map((questionId, index) => {
+          const question = getTextAiQuestionById(questionId);
+          const suffix = question?.code ?? `Q${index + 1}`;
+          return {
+            id: baseTimestamp + index,
+            name: `${name} — ${suffix}`,
+            creationDate: new Date().toISOString(),
+            commentCount: 964,
+            status: 'Completed',
+          };
+        })
+      : [
+          {
+            id: baseTimestamp,
+            name,
+            creationDate: new Date().toISOString(),
+            commentCount: estimatedComments,
+            status: 'Completed',
+          },
+        ];
+
+    createdDashboards.forEach((dashboard) => saveRuntimeTextAiDashboard(dashboard));
+    setDashboards((prev) => [...createdDashboards, ...prev]);
+
+    if (createdDashboards.length > 1) {
+      showToast({
+        message: `${createdDashboards.length} TextAI dashboards created from "${survey.name}"`,
+        variant: 'success',
+      });
+    } else {
+      showToast({
+        message: `TextAI dashboard '${name}' created from "${survey.name}"`,
+        variant: 'success',
+      });
+    }
+
+    router.push(`/text-ai/${createdDashboards[0].id}`);
   }
 
   return (
@@ -128,6 +167,7 @@ export default function TextAiPage() {
           variant="striped"
           sort={{ enabled: true }}
           filterText=""
+          tableLayout="auto"
           NoDataContent={
             <EmptyState
               icon="wm-search-off"

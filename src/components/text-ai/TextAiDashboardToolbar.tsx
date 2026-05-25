@@ -1,29 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
+import { StandardLoader } from '@/components/ui/StandardLoader';
+import { useWickUILib } from '@/components/ui/useWickUILib';
 import {
+  TEXT_AI_PENDING_NEW_COMMENTS,
   TEXT_AI_SUBTOPIC_FILTER_OPTIONS,
   TEXT_AI_TOPIC_FILTER_OPTIONS,
   type TextAiFilterOption,
 } from '@/data/mock-text-ai-widget-data';
 import styles from './TextAiDashboardToolbar.module.css';
-
-const WuButton = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuButton })),
-  { ssr: false }
-);
-const WuSelect = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuSelect })),
-  { ssr: false }
-);
-const WuTooltip = dynamic(
-  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuTooltip })),
-  { ssr: false }
-);
-
-const SETTINGS_TOOLTIP = 'Dashboard settings';
 
 interface TextAiDashboardToolbarProps {
   name: string;
@@ -38,12 +25,15 @@ export function TextAiDashboardToolbar({
   onAddWidget,
   onOpenSettings,
 }: TextAiDashboardToolbarProps) {
+  const wick = useWickUILib();
   const { showToast } = useWuShowToast();
   const [nameState, setNameState] = useState(name);
   const [topic, setTopic] = useState<TextAiFilterOption>(TEXT_AI_TOPIC_FILTER_OPTIONS[0]);
   const [subtopic, setSubtopic] = useState<TextAiFilterOption>(
     TEXT_AI_SUBTOPIC_FILTER_OPTIONS[0]
   );
+  const [newCommentsCount, setNewCommentsCount] = useState(TEXT_AI_PENDING_NEW_COMMENTS);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     setNameState(name);
@@ -63,6 +53,21 @@ export function TextAiDashboardToolbar({
       });
     }
   }
+
+  function handleSync(): void {
+    if (isSyncing) return;
+    setIsSyncing(true);
+  }
+
+  if (!wick) {
+    return (
+      <header className={styles.header}>
+        <StandardLoader className={styles.loader} message="Loading dashboard…" />
+      </header>
+    );
+  }
+
+  const { WuButton, WuSelect, WuTooltip } = wick;
 
   return (
     <header className={styles.header}>
@@ -90,9 +95,16 @@ export function TextAiDashboardToolbar({
           <WuButton
             variant="iconOnly"
             size="sm"
-            aria-label="Table view"
-            onClick={() => showToast({ message: 'Table view', variant: 'success' })}
-            Icon={<span className="wm-table-chart" />}
+            aria-label="Export CSV"
+            onClick={() => showToast({ message: 'CSV export started', variant: 'success' })}
+            Icon={<span className="wm-csv" />}
+          />
+          <WuButton
+            variant="iconOnly"
+            size="sm"
+            aria-label="AI insights"
+            onClick={() => showToast({ message: 'AI insights', variant: 'success' })}
+            Icon={<span className="wc-ai" />}
           />
           <WuButton
             variant="iconOnly"
@@ -101,48 +113,89 @@ export function TextAiDashboardToolbar({
             onClick={() => showToast({ message: 'Share dashboard', variant: 'success' })}
             Icon={<span className="wm-share" />}
           />
-          <WuTooltip content={SETTINGS_TOOLTIP} position="bottom">
+          <WuTooltip content="Dashboard settings" position="bottom">
             <WuButton
               variant="iconOnly"
               size="sm"
-              aria-label={SETTINGS_TOOLTIP}
+              aria-label="Dashboard settings"
               onClick={() => onOpenSettings?.()}
               Icon={<span className="wm-settings" />}
             />
           </WuTooltip>
-          <WuButton onClick={onAddWidget} Icon={<span className="wm-add-2" />}>
+          <WuButton
+            className={styles.addWidgetBtn}
+            onClick={onAddWidget}
+            Icon={<span className="wm-add-2" />}
+          >
             Add widget
           </WuButton>
         </div>
       </div>
 
       <div className={styles.filterRow}>
-        <div className={styles.filterField}>
-          <span className={styles.filterLabel}>Topic</span>
-          <WuSelect
-            data={TEXT_AI_TOPIC_FILTER_OPTIONS}
-            accessorKey={{ value: 'value', label: 'label' }}
-            value={topic}
-            onSelect={(option) => {
-              if (!option) return;
-              setTopic(option as TextAiFilterOption);
-            }}
-            variant="outlined"
-          />
+        <div className={styles.filters}>
+          <div className={styles.inlineFilter}>
+            <span className={styles.filterLabel}>Topic</span>
+            <WuSelect
+              data={TEXT_AI_TOPIC_FILTER_OPTIONS}
+              accessorKey={{ value: 'value', label: 'label' }}
+              value={topic}
+              onSelect={(option) => {
+                if (!option) return;
+                setTopic(option as TextAiFilterOption);
+              }}
+              variant="outlined"
+              className={styles.filterSelect}
+            />
+          </div>
+          <div className={styles.inlineFilter}>
+            <span className={styles.filterLabel}>Sub topic</span>
+            <WuSelect
+              data={TEXT_AI_SUBTOPIC_FILTER_OPTIONS}
+              accessorKey={{ value: 'value', label: 'label' }}
+              value={subtopic}
+              onSelect={(option) => {
+                if (!option) return;
+                setSubtopic(option as TextAiFilterOption);
+              }}
+              variant="outlined"
+              className={styles.filterSelect}
+            />
+          </div>
         </div>
-        <div className={styles.filterField}>
-          <span className={styles.filterLabel}>Sub topic</span>
-          <WuSelect
-            data={TEXT_AI_SUBTOPIC_FILTER_OPTIONS}
-            accessorKey={{ value: 'value', label: 'label' }}
-            value={subtopic}
-            onSelect={(option) => {
-              if (!option) return;
-              setSubtopic(option as TextAiFilterOption);
-            }}
-            variant="outlined"
-          />
-        </div>
+
+        {(newCommentsCount > 0 || isSyncing) ? (
+          <div
+            className={styles.newCommentsBanner}
+            role="status"
+            aria-busy={isSyncing}
+            aria-live="polite"
+          >
+            {!isSyncing ? (
+              <>
+                <span className={`wm-error-outline ${styles.newCommentsIcon}`} aria-hidden />
+                <span className={styles.newCommentsText}>{newCommentsCount} new comments</span>
+              </>
+            ) : (
+              <span className={styles.newCommentsText}>Process in progress</span>
+            )}
+            <WuButton
+              variant="secondary"
+              size="sm"
+              className={styles.syncBtn}
+              disabled={isSyncing}
+              onClick={handleSync}
+              Icon={
+                <span
+                  className={`wm-sync ${isSyncing ? styles.syncIconSpinning : ''}`}
+                  aria-hidden
+                />
+              }
+            >
+              Process now
+            </WuButton>
+          </div>
+        ) : null}
       </div>
     </header>
   );

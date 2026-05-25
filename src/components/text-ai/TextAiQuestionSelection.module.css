@@ -47,6 +47,45 @@
   font-size: 14px;
 }
 
+.dashboardCountHint {
+  color: #1b87e6;
+  font-weight: 500;
+}
+
+.layoutOption {
+  background-color: #f8fafc;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  padding: 0.75rem 0.875rem;
+}
+
+.layoutOptionLabel {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 0.625rem;
+}
+
+.layoutOptionText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.layoutOptionTitle {
+  color: #545e6b;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.layoutOptionDescription {
+  color: #909090;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .paginationBar {
   align-items: center;
   display: flex;

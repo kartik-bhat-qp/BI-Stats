@@ -36,11 +36,15 @@ const PAGE_SIZE = 5;
 interface TextAiQuestionSelectionProps {
   selectedQuestionIds: number[];
   onSelectionChange: (ids: number[]) => void;
+  separateDashboardPerQuestion: boolean;
+  onSeparateDashboardPerQuestionChange: (value: boolean) => void;
 }
 
 export function TextAiQuestionSelection({
   selectedQuestionIds,
   onSelectionChange,
+  separateDashboardPerQuestion,
+  onSeparateDashboardPerQuestionChange,
 }: TextAiQuestionSelectionProps) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
@@ -67,13 +71,19 @@ export function TextAiQuestionSelection({
   const totalCount = MOCK_TEXT_AI_ANALYSIS_QUESTIONS.length;
   const selectedCount = selectedQuestionIds.length;
   const creditsNeeded = getTextAiCreditsNeeded(selectedCount);
+  const showSeparateDashboardOption = selectedCount > 1;
+  const dashboardCount = separateDashboardPerQuestion && showSeparateDashboardOption
+    ? selectedCount
+    : 1;
 
   function toggleQuestion(id: number, checked: boolean): void {
-    onSelectionChange(
-      checked
-        ? [...selectedQuestionIds, id]
-        : selectedQuestionIds.filter((qid) => qid !== id)
-    );
+    const nextIds = checked
+      ? [...selectedQuestionIds, id]
+      : selectedQuestionIds.filter((qid) => qid !== id);
+    onSelectionChange(nextIds);
+    if (nextIds.length <= 1 && separateDashboardPerQuestion) {
+      onSeparateDashboardPerQuestionChange(false);
+    }
   }
 
   function togglePageAll(checked: boolean): void {
@@ -83,7 +93,11 @@ export function TextAiQuestionSelection({
       onSelectionChange([...merged]);
       return;
     }
-    onSelectionChange(selectedQuestionIds.filter((id) => !pageIds.includes(id)));
+    const nextIds = selectedQuestionIds.filter((id) => !pageIds.includes(id));
+    onSelectionChange(nextIds);
+    if (nextIds.length <= 1 && separateDashboardPerQuestion) {
+      onSeparateDashboardPerQuestionChange(false);
+    }
   }
 
   function updateContext(questionId: number, value: string): void {
@@ -177,6 +191,12 @@ export function TextAiQuestionSelection({
       <div className={styles.metaRow}>
         <span className={styles.selectedCount}>
           Questions selected: {selectedCount}/{totalCount}
+          {showSeparateDashboardOption && separateDashboardPerQuestion ? (
+            <span className={styles.dashboardCountHint}>
+              {' '}
+              · {dashboardCount} dashboards will be created
+            </span>
+          ) : null}
         </span>
         <div className={styles.paginationBar}>
           <button
@@ -210,6 +230,28 @@ export function TextAiQuestionSelection({
           />
         </div>
       </div>
+
+      {showSeparateDashboardOption ? (
+        <div className={styles.layoutOption}>
+          <label className={styles.layoutOptionLabel}>
+            <WuCheckbox
+              checked={separateDashboardPerQuestion}
+              onChange={onSeparateDashboardPerQuestionChange}
+              aria-label="Create a separate dashboard for each question"
+            />
+            <span className={styles.layoutOptionText}>
+              <span className={styles.layoutOptionTitle}>
+                Create a separate dashboard for each question
+              </span>
+              <span className={styles.layoutOptionDescription}>
+                Recommended when your open-ended questions cover very different subjects.
+                Processing each question on its own typically produces clearer topics and
+                more accurate insights.
+              </span>
+            </span>
+          </label>
+        </div>
+      ) : null}
 
       <div className={styles.tableWrap}>
         <WuTable

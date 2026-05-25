@@ -16,6 +16,8 @@ export interface TextAiAnalysisWidget {
   rows: TextAiAnalysisRow[];
 }
 
+export const TEXT_AI_PENDING_NEW_COMMENTS = 240;
+
 export interface TextAiFilterOption {
   value: string;
   label: string;
@@ -42,6 +44,36 @@ export const TEXT_AI_SUBTOPIC_FILTER_OPTIONS: TextAiFilterOption[] = [
 const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
   {
     id: 1,
+    value: '.',
+    topic: 'Outlier Parent Topic',
+    subtopic: 'N/A',
+    subtopicTone: 'neutral',
+    insight:
+      'Introduce clear communication channels and timelines for strategic updates to improve departmental transparency.',
+    tags: ['transparency', 'on', 'transparent', 'in', 'organizational', 'communication'],
+  },
+  {
+    id: 2,
+    value: '...',
+    topic: 'Health System Leadership Communication',
+    subtopic: 'Health System Leadership Transparency',
+    subtopicTone: 'positive',
+    insight:
+      'Leaders should share quarterly roadmaps and tie team objectives to organizational priorities in all-hands meetings.',
+    tags: ['leadership', 'transparency', 'alignment'],
+  },
+  {
+    id: 3,
+    value: '.',
+    topic: 'Health System Leadership Communication',
+    subtopic: 'Clinical Department Coordination',
+    subtopicTone: 'positive',
+    insight:
+      'Standardize handoff protocols and create cross-functional working groups for high-priority clinical workflows.',
+    tags: ['coordination', 'clinical', 'process'],
+  },
+  {
+    id: 4,
     value:
       'bessere Kommunikation in der Abteilung, mehr Transparenz bei strategischen Entscheidungen und schnellere Rückmeldungen von Führungskräften',
     topic: 'Outlier Parent Topic',
@@ -52,7 +84,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['transparency', 'strategic', 'hr', 'collaboration'],
   },
   {
-    id: 2,
+    id: 5,
     value:
       'More transparency from leadership on company direction and how individual roles contribute to broader goals',
     topic: 'Health System Leadership Communication',
@@ -63,7 +95,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['leadership', 'transparency', 'alignment'],
   },
   {
-    id: 3,
+    id: 6,
     value:
       'Better coordination between clinical teams during handoffs; too many silos slow down patient-facing decisions',
     topic: 'Health System Leadership Communication',
@@ -74,7 +106,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['coordination', 'clinical', 'process'],
   },
   {
-    id: 4,
+    id: 7,
     value: 'Clearer career paths and more frequent performance conversations with managers',
     topic: 'Career Growth & Development',
     subtopic: 'N/A',
@@ -84,7 +116,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['career', 'management', 'development'],
   },
   {
-    id: 5,
+    id: 8,
     value:
       'Reduce meeting overload and protect focus time so teams can deliver on commitments without burnout',
     topic: 'Cross-Department Collaboration',
@@ -95,7 +127,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['meetings', 'wellbeing', 'productivity'],
   },
   {
-    id: 6,
+    id: 9,
     value:
       'Invest in internal tools that reduce manual reporting — we spend too much time on admin instead of analysis',
     topic: 'Workplace Culture & Values',
@@ -106,7 +138,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['tools', 'efficiency', 'reporting'],
   },
   {
-    id: 7,
+    id: 10,
     value:
       'Stronger recognition for teams that collaborate across regions; successes often go unnoticed outside local units',
     topic: 'Workplace Culture & Values',
@@ -117,7 +149,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
     tags: ['recognition', 'culture', 'global'],
   },
   {
-    id: 8,
+    id: 11,
     value:
       'This is an exceptionally long verbatim response used to validate wrapping behavior in the Value column when respondents provide detailed multi-sentence feedback about workplace improvements',
     topic: 'Outlier Parent Topic',
@@ -131,7 +163,7 @@ const SARTORIS_IMPROVEMENT_ROWS: TextAiAnalysisRow[] = [
 const SARTORIS_APPRECIATE_ROWS: TextAiAnalysisRow[] = [
   {
     id: 101,
-    value: 'Collaborative colleagues and a mission-driven culture that keeps teams motivated',
+    value: '.',
     topic: 'Workplace Culture & Values',
     subtopic: 'Employee Recognition Programs',
     subtopicTone: 'positive',
@@ -141,7 +173,7 @@ const SARTORIS_APPRECIATE_ROWS: TextAiAnalysisRow[] = [
   },
   {
     id: 102,
-    value: 'Flexible hybrid schedule and trust from managers to manage my own time',
+    value: '...',
     topic: 'Cross-Department Collaboration',
     subtopic: 'Flexible Work Arrangements',
     subtopicTone: 'positive',
@@ -151,6 +183,26 @@ const SARTORIS_APPRECIATE_ROWS: TextAiAnalysisRow[] = [
   },
   {
     id: 103,
+    value: 'Collaborative colleagues and a mission-driven culture that keeps teams motivated',
+    topic: 'Workplace Culture & Values',
+    subtopic: 'Employee Recognition Programs',
+    subtopicTone: 'positive',
+    insight:
+      'Highlight mission-driven stories in internal communications to reinforce cultural strengths employees already value.',
+    tags: ['culture', 'mission', 'teamwork'],
+  },
+  {
+    id: 104,
+    value: 'Flexible hybrid schedule and trust from managers to manage my own time',
+    topic: 'Cross-Department Collaboration',
+    subtopic: 'Flexible Work Arrangements',
+    subtopicTone: 'positive',
+    insight:
+      'Continue flexible policies and document best practices from high-trust teams as a model for others.',
+    tags: ['flexibility', 'trust', 'hybrid'],
+  },
+  {
+    id: 105,
     value: 'Access to learning resources and opportunities to work on challenging projects',
     topic: 'Career Growth & Development',
     subtopic: 'N/A',
@@ -160,7 +212,7 @@ const SARTORIS_APPRECIATE_ROWS: TextAiAnalysisRow[] = [
     tags: ['learning', 'projects', 'growth'],
   },
   {
-    id: 104,
+    id: 106,
     value: 'Supportive onboarding experience and helpful mentors during my first year',
     topic: 'Health System Leadership Communication',
     subtopic: 'Clinical Department Coordination',
@@ -170,7 +222,7 @@ const SARTORIS_APPRECIATE_ROWS: TextAiAnalysisRow[] = [
     tags: ['onboarding', 'mentorship'],
   },
   {
-    id: 105,
+    id: 107,
     value: 'Inclusive environment where diverse perspectives are welcomed in team discussions',
     topic: 'Workplace Culture & Values',
     subtopic: 'N/A',

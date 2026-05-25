@@ -47,3 +47,20 @@
 .tableWrap :global(table) {
   min-width: 40rem;
 }
+
+.tableWrap :global(thead th:nth-child(3)),
+.tableWrap :global(tbody td:nth-child(3)) {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tableWrap :global(thead th:nth-child(3) button) {
+  justify-content: center;
+}
+
+.commentCountCell {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  min-width: 4.25rem;
+  text-align: right;
+}
