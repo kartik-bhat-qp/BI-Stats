@@ -1,4 +1,4 @@
-const FOOTER_TEXT = 'QuestionPro Research #BI Lite';
+const FOOTER_TEXT = 'QuestionPro Research #BI Stats';
 
 export function GlobalFooter() {
   return (

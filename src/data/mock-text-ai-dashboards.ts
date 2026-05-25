@@ -3,6 +3,8 @@ export type TextAiDashboardStatus = 'Completed' | 'In progress' | 'Draft';
 export interface TextAiDashboardQuestion {
   id: string;
   text: string;
+  /** Credits attributed to this question; the parent dashboard's total is the sum. */
+  creditsUsed: number;
 }
 
 export interface TextAiDashboard {
@@ -26,18 +28,22 @@ export const MOCK_TEXT_AI_DASHBOARDS: TextAiDashboard[] = [
       {
         id: 'sartoris-r2-q1',
         text: 'What can we do to improve your opinion about Sartorius as a workplace?',
+        creditsUsed: 1420,
       },
       {
         id: 'sartoris-r2-q2',
         text: 'What do you appreciate most about working for Sartorius?',
+        creditsUsed: 1210,
       },
       {
         id: 'sartoris-r2-q3',
         text: 'In your opinion, what drives the success of Sartorius?',
+        creditsUsed: 1180,
       },
       {
         id: 'sartoris-r2-q4',
         text: 'In your opinion, what may hinder the further success of Sartorius?',
+        creditsUsed: 1010,
       },
     ],
   },

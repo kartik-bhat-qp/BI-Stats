@@ -57,6 +57,7 @@ function flattenDashboardsForTable(
         id: dashboard.id * 100000 + index + 1,
         parentDashboardId: dashboard.id,
         questionText: question.text,
+        commentCount: question.creditsUsed,
       });
     });
   }
@@ -112,7 +113,7 @@ export default function TextAiPage() {
                 <span className={styles.expandSpacer} aria-hidden />
                 <Link
                   href={`/text-ai/${item.parentDashboardId}`}
-                  className={styles.questionLink}
+                  className={`${styles.questionLink} ${styles.questionLinkWide}`}
                 >
                   {item.questionText}
                 </Link>
@@ -148,12 +149,26 @@ export default function TextAiPage() {
               ) : (
                 <span className={styles.expandSpacer} aria-hidden />
               )}
-              <Link
-                href={`/text-ai/${item.id}`}
-                className="font-medium text-[#1B87E6] hover:underline"
-              >
-                {item.name}
-              </Link>
+              {isExpandable ? (
+                <button
+                  type="button"
+                  className={styles.dashboardNameButton}
+                  aria-expanded={isExpanded}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleExpand(item.id);
+                  }}
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  href={`/text-ai/${item.id}`}
+                  className="font-medium text-[#1B87E6] hover:underline"
+                >
+                  {item.name}
+                </Link>
+              )}
             </span>
           );
         },
@@ -169,16 +184,15 @@ export default function TextAiPage() {
       },
       {
         accessorKey: 'commentCount',
-        header: 'No of comments',
+        header: 'Credits used',
         headerAlign: 'center',
         cellAlign: 'center',
         enableSorting: true,
-        cell: ({ row }) =>
-          row.original.parentDashboardId !== undefined ? null : (
-            <span className={styles.commentCountCell}>
-              {formatTextAiCredits(row.original.commentCount)}
-            </span>
-          ),
+        cell: ({ row }) => (
+          <span className={styles.commentCountCell}>
+            {formatTextAiCredits(row.original.commentCount)}
+          </span>
+        ),
       },
       {
         accessorKey: 'status',
