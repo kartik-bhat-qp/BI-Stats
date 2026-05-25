@@ -1,10 +1,138 @@
-import { FeaturePlaceholderPage } from '@/components/ui/FeaturePlaceholderPage';
+'use client';
+
+import { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+import type { IWuTableColumnDef } from '@npm-questionpro/wick-ui-lib';
+import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
+import { CreateTextAiDashboardModal } from '@/components/text-ai/CreateTextAiDashboardModal';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PageContainer } from '@/components/ui/PageContainer';
+import {
+  MOCK_TEXT_AI_DASHBOARDS,
+  type TextAiDashboard,
+} from '@/data/mock-text-ai-dashboards';
+import type { SurveyListItem } from '@/data/mock-survey-folders';
+import { formatSmartDate } from '@/data/mock-utils';
+import styles from './TextAiDashboards.module.css';
+
+const WuTable = dynamic(
+  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuTable })),
+  { ssr: false }
+);
+const WuButton = dynamic(
+  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuButton })),
+  { ssr: false }
+);
+const WuInput = dynamic(
+  () => import('@npm-questionpro/wick-ui-lib').then((m) => ({ default: m.WuInput })),
+  { ssr: false }
+);
 
 export default function TextAiPage() {
+  const { showToast } = useWuShowToast();
+  const [dashboards, setDashboards] = useState<TextAiDashboard[]>(MOCK_TEXT_AI_DASHBOARDS);
+  const [search, setSearch] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const filteredDashboards = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return dashboards;
+    return dashboards.filter((d) => d.name.toLowerCase().includes(term));
+  }, [dashboards, search]);
+
+  const columns: IWuTableColumnDef<TextAiDashboard>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Dashboards',
+        enableSorting: true,
+        cell: ({ row }) => (
+          <span className="text-[#545e6b]">{row.original.name}</span>
+        ),
+      },
+      {
+        accessorKey: 'creationDate',
+        header: 'Created on',
+        enableSorting: true,
+        cell: ({ row }) => formatSmartDate(row.original.creationDate),
+      },
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        cell: ({ row }) => row.original.type,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => row.original.status,
+      },
+    ],
+    []
+  );
+
+  function handleCreate(name: string, survey: SurveyListItem): void {
+    const dashboard: TextAiDashboard = {
+      id: Date.now(),
+      name,
+      creationDate: new Date().toISOString(),
+      type: 'Advanced',
+      status: 'Draft',
+    };
+    setDashboards((prev) => [dashboard, ...prev]);
+    showToast({
+      message: `TextAI dashboard '${name}' created from "${survey.name}"`,
+      variant: 'success',
+    });
+  }
+
   return (
-    <FeaturePlaceholderPage
-      title="TextAI"
-      description="Analyze open-ended survey responses with AI-powered dashboards"
-    />
+    <PageContainer className={styles.page}>
+      <header className={styles.headerBlock}>
+        <h1 className={styles.title}>TextAI dashboards</h1>
+        <WuButton
+          className={styles.createBtn}
+          onClick={() => setCreateOpen(true)}
+          Icon={<span className="wm-add-2" />}
+        >
+          Create dashboard
+        </WuButton>
+      </header>
+
+      <div className={styles.toolbar}>
+        <WuInput
+          variant="outlined"
+          placeholder="Search"
+          Icon={<span className="wm-search" />}
+          iconPosition="left"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className={styles.searchInput}
+        />
+      </div>
+
+      <div className={styles.tableWrap}>
+        <WuTable
+          data={filteredDashboards as unknown[]}
+          columns={columns as unknown as IWuTableColumnDef<unknown>[]}
+          variant="striped"
+          sort={{ enabled: true }}
+          filterText=""
+          NoDataContent={
+            <EmptyState
+              icon="wm-search-off"
+              title="No dashboards found"
+              description="Try adjusting your search"
+            />
+          }
+        />
+      </div>
+
+      <CreateTextAiDashboardModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        defaultName={`TextAI dashboard ${dashboards.length + 1}`}
+        onCreate={handleCreate}
+      />
+    </PageContainer>
   );
 }

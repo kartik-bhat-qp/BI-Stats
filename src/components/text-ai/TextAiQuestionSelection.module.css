@@ -1,0 +1,103 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heading {
+  color: #545e6b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.searchRow {
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+.metaRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.selectedCount {
+  color: #545e6b;
+  font-size: 14px;
+}
+
+.paginationBar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.pageNavBtn {
+  align-items: center;
+  background: none;
+  border: none;
+  color: #545e6b;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.pageNavBtn:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.pageRange {
+  color: #545e6b;
+  font-size: 14px;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.pageSizeSelect {
+  max-width: 4rem;
+  min-width: 3.5rem;
+}
+
+.tableWrap {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+
+.tableWrap :global(table) {
+  min-width: 36rem;
+}
+
+.checkboxHeader,
+.checkboxCell {
+  display: flex;
+  justify-content: center;
+}
+
+.codeCell {
+  color: #545e6b;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.questionCell {
+  color: #545e6b;
+  font-size: 14px;
+}
+
+.contextEmpty {
+  color: #b0b0b0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.contextProvided {
+  color: #545e6b;
+  font-size: 14px;
+}
