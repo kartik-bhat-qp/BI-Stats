@@ -133,7 +133,7 @@ export function TextAiSurveySelection({
             value={dataSource}
             onSelect={(option) => {
               if (!option) return;
-              setDataSource(option);
+              setDataSource(option as (typeof DATA_SOURCE_OPTIONS)[number]);
               setPage(0);
               setSearch('');
             }}

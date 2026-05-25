@@ -96,6 +96,7 @@ export function TextAiQuestionSelection({
   const columns: IWuTableColumnDef<TextAiAnalysisQuestion>[] = [
     {
       id: 'select',
+      accessorKey: 'id',
       header: () => (
         <div className={styles.checkboxHeader}>
           <WuCheckbox

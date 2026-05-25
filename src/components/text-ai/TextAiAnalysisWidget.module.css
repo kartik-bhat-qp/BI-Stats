@@ -1,0 +1,134 @@
+.card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cardHeader {
+  align-items: flex-start;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+}
+
+.cardTitle {
+  color: #545e6b;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.menuBtn {
+  align-items: center;
+  background: none;
+  border: none;
+  color: #909090;
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 18px;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.menuBtn:hover {
+  color: #545e6b;
+}
+
+.toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.searchInput {
+  flex: 1 1 16rem;
+  max-width: 100%;
+  min-width: 12rem;
+}
+
+.paginationBar {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.pageNavBtn {
+  align-items: center;
+  background: none;
+  border: none;
+  color: #545e6b;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.pageNavBtn:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.pageRange {
+  color: #545e6b;
+  font-size: 14px;
+  min-width: 4.5rem;
+  text-align: center;
+}
+
+.pageSizeSelect {
+  max-width: 5rem;
+  min-width: 4.5rem;
+}
+
+.tableWrap {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  padding: 0 1rem 1rem;
+}
+
+.tableWrap :global(table) {
+  min-width: 56rem;
+}
+
+.valueCell,
+.topicCell,
+.insightCell,
+.tagsCell {
+  color: #545e6b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.subtopicPill {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 0.375rem;
+  line-height: 1.2;
+  max-width: 100%;
+  padding: 0.25rem 0.625rem;
+  white-space: nowrap;
+}
+
+.subtopicNeutral {
+  background: #fff4e5;
+  color: #b26a00;
+}
+
+.subtopicPositive {
+  background: #edf7ed;
+  color: #2e7d32;
+}

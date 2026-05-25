@@ -82,7 +82,7 @@ export function TextAiModelSetupForm({
             value={values.outputLanguage}
             onSelect={(option) => {
               if (!option) return;
-              patch({ outputLanguage: option });
+              patch({ outputLanguage: option as TextAiLanguageOption });
             }}
             variant="outlined"
           />

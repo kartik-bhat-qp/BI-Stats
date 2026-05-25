@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { IWuTableColumnDef } from '@npm-questionpro/wick-ui-lib';
 import { useWuShowToast } from '@npm-questionpro/wick-ui-lib';
@@ -12,6 +14,7 @@ import {
   type TextAiDashboard,
 } from '@/data/mock-text-ai-dashboards';
 import type { SurveyListItem } from '@/data/mock-survey-folders';
+import { saveRuntimeTextAiDashboard } from '@/data/text-ai-dashboard-runtime';
 import { formatSmartDate } from '@/data/mock-utils';
 import styles from './TextAiDashboards.module.css';
 
@@ -29,6 +32,7 @@ const WuInput = dynamic(
 );
 
 export default function TextAiPage() {
+  const router = useRouter();
   const { showToast } = useWuShowToast();
   const [dashboards, setDashboards] = useState<TextAiDashboard[]>(MOCK_TEXT_AI_DASHBOARDS);
   const [search, setSearch] = useState('');
@@ -47,7 +51,12 @@ export default function TextAiPage() {
         header: 'Dashboards',
         enableSorting: true,
         cell: ({ row }) => (
-          <span className="text-[#545e6b]">{row.original.name}</span>
+          <Link
+            href={`/text-ai/${row.original.id}`}
+            className="font-medium text-[#1B87E6] hover:underline"
+          >
+            {row.original.name}
+          </Link>
         ),
       },
       {
@@ -76,13 +85,15 @@ export default function TextAiPage() {
       name,
       creationDate: new Date().toISOString(),
       type: 'Advanced',
-      status: 'Draft',
+      status: 'Completed',
     };
+    saveRuntimeTextAiDashboard(dashboard);
     setDashboards((prev) => [dashboard, ...prev]);
     showToast({
       message: `TextAI dashboard '${name}' created from "${survey.name}"`,
       variant: 'success',
     });
+    router.push(`/text-ai/${dashboard.id}`);
   }
 
   return (

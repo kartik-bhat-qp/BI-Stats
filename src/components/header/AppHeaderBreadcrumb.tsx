@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getDashboardById } from '@/data/get-dashboard-by-id';
+import { getTextAiDashboardById } from '@/data/get-text-ai-dashboard-by-id';
 import { MOCK_CURRENT_WORKSPACE } from '@/data/mock-workspace';
 import styles from './AppHeaderBreadcrumb.module.css';
 
@@ -32,6 +33,21 @@ function buildBreadcrumbItems(pathname: string): BreadcrumbItem[] {
 
   if (pathname === '/settings') {
     return [workspaces, workspace, { label: 'Settings' }];
+  }
+
+  if (pathname === '/text-ai') {
+    return [workspaces, workspace, { label: 'TextAI' }];
+  }
+
+  const textAiMatch = pathname.match(/^\/text-ai\/(\d+)$/);
+  if (textAiMatch) {
+    const dashboard = getTextAiDashboardById(Number(textAiMatch[1]));
+    return [
+      workspaces,
+      workspace,
+      { label: 'TextAI', href: '/text-ai' },
+      { label: dashboard?.name ?? 'Untitled' },
+    ];
   }
 
   const dashboardMatch = pathname.match(/^\/dashboards\/(\d+)$/);
